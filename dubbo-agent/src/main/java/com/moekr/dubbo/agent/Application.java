@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application extends SpringApplication {
 	public static void main(String[] args) {
 		SpringApplication application = new SpringApplication(Application.class);
-		if (AgentType.current() == AgentType.PRODUCER) {
+		if (AgentType.current() == AgentType.PROVIDER) {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.run(args);

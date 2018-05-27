@@ -1,11 +1,12 @@
 package com.moekr.dubbo.agent.consumer;
 
-import com.moekr.dubbo.agent.protocol.RequestMessage;
-import com.moekr.dubbo.agent.protocol.ResponseMessage;
+import com.moekr.dubbo.agent.protocol.AgentRequest;
+import com.moekr.dubbo.agent.protocol.AgentResponse;
 import com.moekr.dubbo.agent.registry.Endpoint;
 import com.moekr.dubbo.agent.registry.Registry;
 import com.moekr.dubbo.agent.util.Constants;
-import com.moekr.dubbo.agent.util.MessageFuture;
+import com.moekr.dubbo.agent.util.FutureHolder;
+import com.moekr.dubbo.agent.util.ResponseFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.TimeUnit;
-
 
 @RestController
 @ConditionalOnWebApplication
@@ -30,19 +30,19 @@ public class ConsumerAgent {
 						 @RequestParam("method") String methodName,
 						 @RequestParam("parameterTypesString") String parameterTypesString,
 						 @RequestParam("parameter") String parameter) throws Exception {
-		RequestMessage requestMessage = new RequestMessage();
-		requestMessage.setInterfaceName(interfaceName);
-		requestMessage.setMethodName(methodName);
-		requestMessage.setParameterTypesString(parameterTypesString);
-		requestMessage.setParameter(parameter);
+		AgentRequest request = AgentRequest.newInstance();
+		request.setInterfaceName(interfaceName);
+		request.setMethodName(methodName);
+		request.setParameterTypesString(parameterTypesString);
+		request.setParameter(parameter);
 
-		Endpoint endpoint = registry.find(interfaceName).select();
-		endpoint.increase();
-		MessageFuture future = new MessageFuture(endpoint, requestMessage);
-		MessageFutureHolder.hold(future);
-		endpoint.getChannel().writeAndFlush(requestMessage);
-		ResponseMessage responseMessage = future.get(30, TimeUnit.SECONDS);
-		if (responseMessage == null) return Constants.ERROR_RESULT;
-		return responseMessage.getResult();
+		Endpoint endpoint = registry.find(interfaceName).select().increase();
+		ResponseFuture<AgentRequest, AgentResponse> future = new ResponseFuture<>(request);
+		FutureHolder.hold(future);
+		endpoint.getChannel().writeAndFlush(request);
+		AgentResponse response = future.get(30, TimeUnit.SECONDS);
+		endpoint.decrease();
+		if (response == null) return Constants.ERROR_RESULT;
+		return response.getResult();
 	}
 }

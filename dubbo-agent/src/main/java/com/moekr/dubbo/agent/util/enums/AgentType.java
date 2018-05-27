@@ -3,7 +3,7 @@ package com.moekr.dubbo.agent.util.enums;
 import static com.moekr.dubbo.agent.util.Constants.*;
 
 public enum AgentType {
-	CONSUMER, PRODUCER;
+	CONSUMER, PROVIDER;
 
 	private static final AgentType CURRENT_AGENT_TYPE;
 
@@ -11,8 +11,8 @@ public enum AgentType {
 		String type = System.getProperty(AGENT_TYPE_PROPERTY);
 		if (CONSUMER_TYPE.equals(type)) {
 			CURRENT_AGENT_TYPE = CONSUMER;
-		} else if (PRODUCER_TYPE.equals(type)) {
-			CURRENT_AGENT_TYPE = PRODUCER;
+		} else if (PROVIDER_TYPE.equals(type)) {
+			CURRENT_AGENT_TYPE = PROVIDER;
 		} else {
 			CURRENT_AGENT_TYPE = null;
 		}

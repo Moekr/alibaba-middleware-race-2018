@@ -1,9 +1,11 @@
-package com.moekr.dubbo.agent.registry;
+package com.moekr.dubbo.agent.registry.etcd;
 
 import com.coreos.jetcd.Watch;
 import com.coreos.jetcd.data.KeyValue;
 import com.coreos.jetcd.watch.WatchEvent;
 import com.coreos.jetcd.watch.WatchResponse;
+import com.moekr.dubbo.agent.registry.Endpoint;
+import com.moekr.dubbo.agent.registry.EndpointSet;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.util.Collection;

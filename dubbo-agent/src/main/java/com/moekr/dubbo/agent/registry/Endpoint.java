@@ -1,6 +1,7 @@
 package com.moekr.dubbo.agent.registry;
 
-import com.moekr.dubbo.agent.consumer.NettyClientBootstrap;
+import com.moekr.dubbo.agent.consumer.AgentClientHandler;
+import com.moekr.dubbo.agent.netty.NettyClientBootstrap;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 
@@ -18,15 +19,17 @@ public class Endpoint implements Comparable<Endpoint> {
 	public Endpoint(String host, int port) throws InterruptedException {
 		this.host = host;
 		this.port = port;
-		this.channel = new NettyClientBootstrap(host, port).getSocketChannel();
+		this.channel = new NettyClientBootstrap(host, port, new AgentClientHandler()).getSocketChannel();
 	}
 
-	public void increase() {
+	public Endpoint increase() {
 		count.incrementAndGet();
+		return this;
 	}
 
-	public void decrease() {
+	public Endpoint decrease() {
 		count.decrementAndGet();
+		return this;
 	}
 
 	@Override
