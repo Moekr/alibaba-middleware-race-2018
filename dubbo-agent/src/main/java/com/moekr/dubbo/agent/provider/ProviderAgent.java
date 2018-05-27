@@ -20,13 +20,13 @@ import static com.moekr.dubbo.agent.util.Constants.*;
 
 @Component
 @ConditionalOnNotWebApplication
-public class ProducerAgent {
+public class ProviderAgent {
 	private final Registry registry;
 
 	private SocketChannel channel;
 
 	@Autowired
-	public ProducerAgent(Registry registry) {
+	public ProviderAgent(Registry registry) {
 		this.registry = registry;
 	}
 
