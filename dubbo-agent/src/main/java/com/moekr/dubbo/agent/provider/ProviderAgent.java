@@ -9,7 +9,6 @@ import com.moekr.dubbo.agent.registry.Registry;
 import com.moekr.dubbo.agent.util.FutureHolder;
 import com.moekr.dubbo.agent.util.ResponseFuture;
 import io.netty.channel.socket.SocketChannel;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Component;
@@ -50,7 +49,10 @@ public class ProviderAgent {
 
 	private byte[] invoke0(AgentRequest agentRequest) throws InterruptedException {
 		DubboRequest dubboRequest = DubboRequest.newInstance();
-		BeanUtils.copyProperties(agentRequest, dubboRequest);
+		dubboRequest.setInterfaceName(agentRequest.getInterfaceName());
+		dubboRequest.setMethodName(agentRequest.getMethodName());
+		dubboRequest.setParameterTypesString(agentRequest.getParameterTypesString());
+		dubboRequest.setParameter(agentRequest.getParameter());
 
 		ResponseFuture<DubboRequest, DubboResponse> future = new ResponseFuture<>(dubboRequest);
 		FutureHolder.hold(future);

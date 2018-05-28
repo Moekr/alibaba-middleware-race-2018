@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 @CommonsLog
 public class AgentRequestHandler extends SimpleChannelInboundHandler<AgentRequest> {
-	private final ExecutorService executorService = Executors.newCachedThreadPool();
+	private final ExecutorService executorService = Executors.newFixedThreadPool(144);
 	private final Function<AgentRequest, byte[]> invokeFunction;
 
 	public AgentRequestHandler(Function<AgentRequest, byte[]> invokeFunction) {
