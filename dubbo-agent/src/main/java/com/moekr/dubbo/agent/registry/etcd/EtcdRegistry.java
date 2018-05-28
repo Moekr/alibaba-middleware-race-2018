@@ -43,10 +43,10 @@ public class EtcdRegistry implements Registry {
 	}
 
 	@Override
-	public void register(String serviceName, int port) throws ExecutionException, InterruptedException, UnknownHostException {
+	public void register(String serviceName, int port, int weight) throws ExecutionException, InterruptedException, UnknownHostException {
 		String key = MessageFormat.format("/{0}/{1}/{2}:{3}", ETCD_ROOT_PATH, serviceName, ToolKit.currentIpAddress(), String.valueOf(port));
 		ByteSequence keyByteSequence = ByteSequence.fromString(key);
-		ByteSequence valueByteSequence = ByteSequence.fromString("");
+		ByteSequence valueByteSequence = ByteSequence.fromString(String.valueOf(weight));
 		kv.put(keyByteSequence, valueByteSequence, PutOption.newBuilder().withLeaseId(leaseId).build()).get();
 	}
 
@@ -59,8 +59,7 @@ public class EtcdRegistry implements Registry {
 					ByteSequence keyByteSequence = ByteSequence.fromString(key);
 					GetResponse response = kv.get(keyByteSequence, GetOption.newBuilder().withPrefix(keyByteSequence).build()).get();
 					Watch.Watcher watcher = watch.watch(keyByteSequence, WatchOption.newBuilder().withPrefix(keyByteSequence).build());
-					EndpointSet endpointSet = new EtcdEndpointSet(watcher);
-					((EtcdEndpointSet) endpointSet).initialize(response.getKvs());
+					EndpointSet endpointSet = new EtcdEndpointSet(response.getKvs(), watcher);
 					endpointSetMap.put(serviceName, endpointSet);
 				}
 			}

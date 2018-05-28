@@ -34,9 +34,10 @@ public class ProviderAgent {
 	public void initialize() throws Exception {
 		int dubboPort = Integer.valueOf(System.getProperty(DUBBO_PORT_PROPERTY));
 		int serverPort = Integer.valueOf(System.getProperty(SERVER_PORT_PROPERTY));
+		int weight = Integer.valueOf(System.getProperty(PRIVIDER_WEIGHT_PROPERTY));
 		channel = new NettyClientBootstrap(LOCAL_HOST, dubboPort, new DubboClientHandler()).getSocketChannel();
 		new NettyServerBootstrap(serverPort, new AgentServerHandler(this::invoke));
-		registry.register(SERVICE_NAME, serverPort);
+		registry.register(SERVICE_NAME, serverPort, weight);
 	}
 
 	private byte[] invoke(AgentRequest request) {

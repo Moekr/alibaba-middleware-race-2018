@@ -36,12 +36,11 @@ public class ConsumerAgent {
 		request.setParameterTypesString(parameterTypesString);
 		request.setParameter(parameter);
 
-		Endpoint endpoint = registry.find(interfaceName).select().increase();
+		Endpoint endpoint = registry.find(interfaceName).select();
 		ResponseFuture<AgentRequest, AgentResponse> future = new ResponseFuture<>(request);
 		FutureHolder.hold(future);
 		endpoint.getChannel().writeAndFlush(request);
 		AgentResponse response = future.get(30, TimeUnit.SECONDS);
-		endpoint.decrease();
 		if (response == null) return Constants.ERROR_RESULT;
 		return response.getResult();
 	}
