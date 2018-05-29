@@ -1,22 +1,28 @@
 package com.moekr.dubbo.agent.consumer;
 
+import com.moekr.dubbo.agent.netty.NettyServerBootstrap;
 import com.moekr.dubbo.agent.protocol.AgentRequest;
 import com.moekr.dubbo.agent.protocol.AgentResponse;
 import com.moekr.dubbo.agent.registry.Endpoint;
 import com.moekr.dubbo.agent.registry.Registry;
-import com.moekr.dubbo.agent.util.Constants;
 import com.moekr.dubbo.agent.util.FutureHolder;
 import com.moekr.dubbo.agent.util.ResponseFuture;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 
-@RestController
-@ConditionalOnWebApplication
+import static com.moekr.dubbo.agent.util.Constants.*;
+
+@Component
+@ConditionalOnProperty(name = AGENT_TYPE_PROPERTY, havingValue = CONSUMER_TYPE)
 public class ConsumerAgent {
 	private final Registry registry;
 
@@ -25,11 +31,36 @@ public class ConsumerAgent {
 		this.registry = registry;
 	}
 
-	@RequestMapping
-	public String invoke(@RequestParam("interface") String interfaceName,
-						 @RequestParam("method") String methodName,
-						 @RequestParam("parameterTypesString") String parameterTypesString,
-						 @RequestParam("parameter") String parameter) throws Exception {
+	@PostConstruct
+	public void initialize() {
+		int serverPort = Integer.valueOf(System.getProperty(SERVER_PORT_PROPERTY));
+		new NettyServerBootstrap(serverPort, 384, new HttpServerHandler(this::invoke));
+	}
+
+	private String invoke(FullHttpRequest httpRequest) {
+		try {
+			return invoke0(httpRequest);
+		} catch (Exception e) {
+			return ERROR_RESULT;
+		}
+	}
+
+	private String invoke0(FullHttpRequest httpRequest) throws Exception {
+		if (httpRequest.method() != HttpMethod.POST) return ERROR_RESULT;
+		HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(httpRequest);
+		String interfaceName, methodName, parameterTypesString, parameter;
+		try {
+			if (decoder.isMultipart()) return ERROR_RESULT;
+			interfaceName = query(decoder, "interface");
+			methodName = query(decoder, "method");
+			parameterTypesString = query(decoder, "parameterTypesString");
+			parameter = query(decoder, "parameter");
+		} catch (Exception e) {
+			return ERROR_RESULT;
+		} finally {
+			decoder.destroy();
+		}
+
 		AgentRequest request = AgentRequest.newInstance();
 		request.setInterfaceName(interfaceName);
 		request.setMethodName(methodName);
@@ -40,8 +71,16 @@ public class ConsumerAgent {
 		ResponseFuture<AgentRequest, AgentResponse> future = new ResponseFuture<>(request);
 		FutureHolder.hold(future);
 		endpoint.getChannel().writeAndFlush(request);
-		AgentResponse response = future.get(30, TimeUnit.SECONDS);
-		if (response == null) return Constants.ERROR_RESULT;
+		AgentResponse response = future.get(TIMEOUT, TIMEOUT_UNIT);
+		if (response == null) return ERROR_RESULT;
 		return response.getResult();
+	}
+
+	private String query(HttpPostRequestDecoder decoder, String key) throws IOException {
+		InterfaceHttpData data = decoder.getBodyHttpData(key);
+		if (data instanceof Attribute) {
+			return ((Attribute) data).getValue();
+		}
+		throw new IllegalArgumentException();
 	}
 }

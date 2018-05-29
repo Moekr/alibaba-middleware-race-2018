@@ -16,7 +16,7 @@ public class Endpoint {
 	@Setter
 	private int weight;
 
-	public Endpoint(String host, int port, int weight) throws InterruptedException {
+	public Endpoint(String host, int port, int weight) {
 		this.host = host;
 		this.port = port;
 		this.weight = weight;

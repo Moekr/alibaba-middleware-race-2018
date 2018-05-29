@@ -100,13 +100,9 @@ class EtcdEndpointSet implements EndpointSet {
 			String[] content = address.split(":");
 			String host = content[0];
 			int port = Integer.valueOf(content[1]);
-			try {
-				endpoint = new Endpoint(host, port, weight);
-				totalWeight = totalWeight + weight;
-				endpointMap.put(key, endpoint);
-			} catch (Exception e) {
-				log.error("Failed to initialize endpoint", e);
-			}
+			endpoint = new Endpoint(host, port, weight);
+			totalWeight = totalWeight + weight;
+			endpointMap.put(key, endpoint);
 		} else {
 			totalWeight = totalWeight - endpoint.getWeight() + weight;
 			endpoint.setWeight(weight);

@@ -10,7 +10,7 @@ import com.moekr.dubbo.agent.util.FutureHolder;
 import com.moekr.dubbo.agent.util.ResponseFuture;
 import io.netty.channel.socket.SocketChannel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +18,7 @@ import javax.annotation.PostConstruct;
 import static com.moekr.dubbo.agent.util.Constants.*;
 
 @Component
-@ConditionalOnNotWebApplication
+@ConditionalOnProperty(name = AGENT_TYPE_PROPERTY, havingValue = PROVIDER_TYPE)
 public class ProviderAgent {
 	private final Registry registry;
 
@@ -33,9 +33,9 @@ public class ProviderAgent {
 	public void initialize() throws Exception {
 		int dubboPort = Integer.valueOf(System.getProperty(DUBBO_PORT_PROPERTY));
 		int serverPort = Integer.valueOf(System.getProperty(SERVER_PORT_PROPERTY));
-		int weight = Integer.valueOf(System.getProperty(PRIVIDER_WEIGHT_PROPERTY));
+		int weight = Integer.valueOf(System.getProperty(PROVIDER_WEIGHT_PROPERTY));
 		channel = new NettyClientBootstrap(LOCAL_HOST, dubboPort, new DubboClientHandler()).getSocketChannel();
-		new NettyServerBootstrap(serverPort, new AgentServerHandler(this::invoke));
+		new NettyServerBootstrap(serverPort, 0, new AgentServerHandler(this::invoke));
 		registry.register(SERVICE_NAME, serverPort, weight);
 	}
 

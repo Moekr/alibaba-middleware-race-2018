@@ -1,5 +1,6 @@
 package com.moekr.dubbo.agent.netty;
 
+import com.moekr.dubbo.agent.util.ToolKit;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
@@ -9,6 +10,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 
+import static com.moekr.dubbo.agent.util.Constants.RETRY_DELAY;
+import static com.moekr.dubbo.agent.util.Constants.RETRY_TIME;
+
 public class NettyClientBootstrap {
 	private final int port;
 	private final String host;
@@ -16,13 +20,13 @@ public class NettyClientBootstrap {
 	@Getter
 	private SocketChannel socketChannel;
 
-	public NettyClientBootstrap(String host, int port, ChannelHandler handler) throws InterruptedException {
+	public NettyClientBootstrap(String host, int port, ChannelHandler handler) {
 		this.host = host;
 		this.port = port;
 		start(handler);
 	}
 
-	private void start(ChannelHandler handler) throws InterruptedException {
+	private void start(ChannelHandler handler) {
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.channel(NioSocketChannel.class);
 		bootstrap.group(new NioEventLoopGroup());
@@ -30,9 +34,13 @@ public class NettyClientBootstrap {
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.remoteAddress(this.host, this.port);
 		bootstrap.handler(handler);
-		ChannelFuture future = bootstrap.connect().sync();
-		if (future.isSuccess()) {
-			socketChannel = (SocketChannel) future.channel();
+		ChannelFuture future = bootstrap.connect().awaitUninterruptibly();
+		int retryLeft = RETRY_TIME;
+		while (!future.isSuccess() && retryLeft > 0) {
+			ToolKit.sleep(RETRY_DELAY);
+			future = bootstrap.connect().awaitUninterruptibly();
+			retryLeft = retryLeft - 1;
 		}
+		socketChannel = (SocketChannel) future.channel();
 	}
 }
