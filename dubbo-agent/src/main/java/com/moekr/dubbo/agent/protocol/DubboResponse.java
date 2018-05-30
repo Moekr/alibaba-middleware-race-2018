@@ -2,11 +2,11 @@ package com.moekr.dubbo.agent.protocol;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
+@ToString(callSuper = true)
 public class DubboResponse extends AbstractResponse {
 	private byte[] result;
 

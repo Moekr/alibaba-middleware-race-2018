@@ -6,7 +6,6 @@ import com.coreos.jetcd.watch.WatchEvent;
 import com.coreos.jetcd.watch.WatchResponse;
 import com.moekr.dubbo.agent.registry.Endpoint;
 import com.moekr.dubbo.agent.registry.EndpointSet;
-import lombok.extern.apachecommons.CommonsLog;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -16,7 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-@CommonsLog
 class EtcdEndpointSet implements EndpointSet {
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Random random = new Random();

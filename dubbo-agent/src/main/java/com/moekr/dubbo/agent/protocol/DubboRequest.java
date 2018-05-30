@@ -2,11 +2,13 @@ package com.moekr.dubbo.agent.protocol;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import static com.moekr.dubbo.agent.protocol.DubboConstants.DUBBO_VERSION;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class DubboRequest extends AbstractRequest {
 	private String dubboVersion = DUBBO_VERSION;
 	private String interfaceName;
@@ -18,9 +20,7 @@ public class DubboRequest extends AbstractRequest {
 	private boolean twoWay = true;
 	private boolean event = false;
 
-	public static DubboRequest newInstance() {
-		DubboRequest request = new DubboRequest();
-		request.setId(SEQUENCE.incrementAndGet());
-		return request;
+	public DubboRequest(long id) {
+		super(id);
 	}
 }
