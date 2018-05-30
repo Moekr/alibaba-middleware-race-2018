@@ -1,8 +1,8 @@
 package com.moekr.dubbo.agent;
 
-import com.moekr.dubbo.agent.netty.AgentRequestSender;
+import com.moekr.dubbo.agent.netty.DubboRequestSender;
 import com.moekr.dubbo.agent.netty.NettyServerBootstrap;
-import com.moekr.dubbo.agent.protocol.converter.HttpToAgentRequestConverter;
+import com.moekr.dubbo.agent.protocol.converter.HttpToDubboRequestConverter;
 import com.moekr.dubbo.agent.registry.Registry;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -37,8 +37,8 @@ public class ConsumerAgent {
 						.addLast(new HttpRequestDecoder())
 						.addLast(new HttpResponseEncoder())
 						.addLast(new HttpObjectAggregator(1024 * 1024))
-						.addLast(new HttpToAgentRequestConverter())
-						.addLast(new AgentRequestSender(registry));
+						.addLast(new HttpToDubboRequestConverter())
+						.addLast(new DubboRequestSender(registry));
 			}
 		});
 	}

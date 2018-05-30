@@ -1,6 +1,6 @@
 package com.moekr.dubbo.agent.protocol.converter;
 
-import com.moekr.dubbo.agent.protocol.AgentRequest;
+import com.moekr.dubbo.agent.protocol.DubboRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static io.netty.handler.codec.http.HttpMethod.POST;
 
-public class HttpToAgentRequestConverter extends MessageToMessageDecoder<FullHttpRequest> {
+public class HttpToDubboRequestConverter extends MessageToMessageDecoder<FullHttpRequest> {
 	@Override
 	protected void decode(ChannelHandlerContext context, FullHttpRequest httpRequest, List<Object> out) throws Exception {
 		if (httpRequest.method() != POST)
@@ -31,12 +31,12 @@ public class HttpToAgentRequestConverter extends MessageToMessageDecoder<FullHtt
 			decoder.destroy();
 		}
 
-		AgentRequest agentRequest = AgentRequest.newInstance();
-		agentRequest.setInterfaceName(interfaceName);
-		agentRequest.setMethodName(methodName);
-		agentRequest.setParameterTypesString(parameterTypesString);
-		agentRequest.setParameter(parameter);
-		out.add(agentRequest);
+		DubboRequest dubboRequest = DubboRequest.newInstance();
+		dubboRequest.setInterfaceName(interfaceName);
+		dubboRequest.setMethodName(methodName);
+		dubboRequest.setParameterTypesString(parameterTypesString);
+		dubboRequest.setParameter(parameter);
+		out.add(dubboRequest);
 	}
 
 	@Override

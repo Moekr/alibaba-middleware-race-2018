@@ -1,15 +1,17 @@
 package com.moekr.dubbo.agent.protocol;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.moekr.dubbo.agent.protocol.DubboConstants.DUBBO_VERSION;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class DubboRequest extends AbstractRequest {
+public class DubboRequest {
+	protected static final AtomicLong SEQUENCE = new AtomicLong(0);
+
+	private final long id;
+
 	private String dubboVersion = DUBBO_VERSION;
 	private String interfaceName;
 	private String version;
@@ -20,7 +22,11 @@ public class DubboRequest extends AbstractRequest {
 	private boolean twoWay = true;
 	private boolean event = false;
 
-	public DubboRequest(long id) {
-		super(id);
+	private DubboRequest(long id) {
+		this.id = id;
+	}
+
+	public static DubboRequest newInstance() {
+		return new DubboRequest(SEQUENCE.incrementAndGet());
 	}
 }

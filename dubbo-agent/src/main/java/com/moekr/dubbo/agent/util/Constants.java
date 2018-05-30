@@ -7,8 +7,6 @@ public abstract class Constants {
 	public static final String PROVIDER_WEIGHT_PROPERTY = "weight";
 	public static final String DUBBO_PORT_PROPERTY = "dubbo.protocol.port";
 
-	public static final String LOCAL_HOST = "localhost";
-
 	public static final String CONSUMER_TYPE = "consumer";
 	public static final String PROVIDER_TYPE = "provider";
 
