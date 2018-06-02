@@ -2,9 +2,9 @@ package com.moekr.dubbo.agent.registry;
 
 import com.moekr.dubbo.agent.netty.HttpResponseSender;
 import com.moekr.dubbo.agent.netty.NettyClientBootstrap;
-import com.moekr.dubbo.agent.protocol.codec.DubboRequestEncoder;
-import com.moekr.dubbo.agent.protocol.codec.DubboResponseDecoder;
-import com.moekr.dubbo.agent.protocol.converter.DubboToHttpResponseConverter;
+import com.moekr.dubbo.agent.protocol.codec.AgentMessageDecoder;
+import com.moekr.dubbo.agent.protocol.codec.AgentMessageEncoder;
+import com.moekr.dubbo.agent.protocol.converter.AgentToHttpResponseConverter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Data;
@@ -27,9 +27,9 @@ public class Endpoint {
 			@Override
 			protected void initChannel(SocketChannel channel) {
 				channel.pipeline()
-						.addLast(new DubboRequestEncoder())
-						.addLast(new DubboResponseDecoder())
-						.addLast(new DubboToHttpResponseConverter())
+						.addLast(new AgentMessageEncoder())
+						.addLast(new AgentMessageDecoder())
+						.addLast(new AgentToHttpResponseConverter())
 						.addLast(new HttpResponseSender());
 			}
 		}).getSocketChannel();
