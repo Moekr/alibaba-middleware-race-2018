@@ -2,7 +2,7 @@ package com.moekr.dubbo.agent.protocol.converter;
 
 import com.moekr.dubbo.agent.protocol.AgentResponse;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -21,7 +21,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class AgentToHttpResponseConverter extends MessageToMessageDecoder<AgentResponse> {
 	@Override
 	protected void decode(ChannelHandlerContext context, AgentResponse agentResponse, List<Object> out) {
-		ByteBuf byteBuf = Unpooled.wrappedBuffer(agentResponse.getResult().getBytes(CharsetUtil.UTF_8));
+		byte[] body = agentResponse.getResult().getBytes(CharsetUtil.UTF_8);
+		ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.directBuffer(body.length).writeBytes(body);
 		HttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, OK, byteBuf);
 		httpResponse.headers().set(CONTENT_LENGTH, byteBuf.readableBytes());
 		httpResponse.headers().set(CONTENT_TYPE, TEXT_PLAIN);
