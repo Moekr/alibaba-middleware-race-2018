@@ -9,6 +9,8 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
 
+import java.util.concurrent.Executors;
+
 public class NettyServerBootstrap {
 	private final int port;
 
@@ -23,7 +25,10 @@ public class NettyServerBootstrap {
 	private void bind(ChannelHandler handler) {
 		ServerBootstrap bootstrap = new ServerBootstrap();
 		bootstrap.channel(NioServerSocketChannel.class);
-		bootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup());
+		bootstrap.group(
+				new NioEventLoopGroup(0, Executors.newCachedThreadPool()),
+				new NioEventLoopGroup(0, Executors.newCachedThreadPool())
+		);
 		bootstrap.option(ChannelOption.SO_BACKLOG, 1024 * 1024);
 		bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
 		bootstrap.childOption(ChannelOption.TCP_NODELAY, true);

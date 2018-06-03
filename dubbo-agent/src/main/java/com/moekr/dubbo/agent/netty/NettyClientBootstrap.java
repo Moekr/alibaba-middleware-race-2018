@@ -10,6 +10,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 
+import java.util.concurrent.Executors;
+
 import static com.moekr.dubbo.agent.util.Constants.RETRY_DELAY;
 import static com.moekr.dubbo.agent.util.Constants.RETRY_TIME;
 
@@ -29,7 +31,7 @@ public class NettyClientBootstrap {
 	private void start(ChannelHandler handler) {
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.channel(NioSocketChannel.class);
-		bootstrap.group(new NioEventLoopGroup());
+		bootstrap.group(new NioEventLoopGroup(0, Executors.newCachedThreadPool()));
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.remoteAddress(this.host, this.port);
