@@ -5,9 +5,9 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 
 import java.util.concurrent.Executors;
@@ -30,8 +30,8 @@ public class NettyClientBootstrap {
 
 	private void start(ChannelHandler handler) {
 		Bootstrap bootstrap = new Bootstrap();
-		bootstrap.channel(NioSocketChannel.class);
-		bootstrap.group(new NioEventLoopGroup(0, Executors.newCachedThreadPool()));
+		bootstrap.channel(EpollSocketChannel.class);
+		bootstrap.group(new EpollEventLoopGroup(0, Executors.newCachedThreadPool()));
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.remoteAddress(this.host, this.port);

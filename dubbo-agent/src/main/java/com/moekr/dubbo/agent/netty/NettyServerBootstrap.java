@@ -4,9 +4,9 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.socket.ServerSocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
 
 import java.util.concurrent.Executors;
@@ -24,12 +24,12 @@ public class NettyServerBootstrap {
 
 	private void bind(ChannelHandler handler) {
 		ServerBootstrap bootstrap = new ServerBootstrap();
-		bootstrap.channel(NioServerSocketChannel.class);
+		bootstrap.channel(EpollServerSocketChannel.class);
 		bootstrap.group(
-				new NioEventLoopGroup(0, Executors.newCachedThreadPool()),
-				new NioEventLoopGroup(0, Executors.newCachedThreadPool())
+				new EpollEventLoopGroup(0, Executors.newCachedThreadPool()),
+				new EpollEventLoopGroup(0, Executors.newCachedThreadPool())
 		);
-		bootstrap.option(ChannelOption.SO_BACKLOG, 1024 * 1024);
+		bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
 		bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
 		bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
 		bootstrap.childHandler(handler);
