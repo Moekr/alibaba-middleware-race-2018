@@ -20,6 +20,7 @@ public class HttpResponseSender extends SimpleChannelInboundHandler<FullHttpResp
 		if (id != null) {
 			RequestContext requestContext = ContextHolder.remove(id);
 			if (requestContext != null) {
+				ContextHolder.decrease(context.channel());
 				requestContext.getContext().writeAndFlush(response);
 			}
 		}
