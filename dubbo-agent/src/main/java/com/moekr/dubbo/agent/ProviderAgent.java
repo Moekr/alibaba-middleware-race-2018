@@ -6,10 +6,8 @@ import com.moekr.dubbo.agent.netty.RequestSender;
 import com.moekr.dubbo.agent.netty.ResponseSender;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageDecoder;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageEncoder;
-import com.moekr.dubbo.agent.protocol.codec.DubboRequestEncoder;
-import com.moekr.dubbo.agent.protocol.codec.DubboResponseDecoder;
-import com.moekr.dubbo.agent.protocol.converter.AgentToDubboRequestConverter;
-import com.moekr.dubbo.agent.protocol.converter.DubboToAgentResponseConverter;
+import com.moekr.dubbo.agent.protocol.codec.AgentToDubboRequestEncoder;
+import com.moekr.dubbo.agent.protocol.codec.DubboToAgentResponseDecoder;
 import com.moekr.dubbo.agent.registry.Registry;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -42,9 +40,8 @@ public class ProviderAgent {
 			@Override
 			protected void initChannel(SocketChannel channel) {
 				channel.pipeline()
-						.addLast(new DubboRequestEncoder())
-						.addLast(new DubboResponseDecoder())
-						.addLast(new DubboToAgentResponseConverter())
+						.addLast(new AgentToDubboRequestEncoder())
+						.addLast(new DubboToAgentResponseDecoder())
 						.addLast(new ResponseSender());
 			}
 		}).getSocketChannel();
@@ -52,9 +49,8 @@ public class ProviderAgent {
 			@Override
 			protected void initChannel(SocketChannel channel) {
 				channel.pipeline()
-						.addLast(new AgentMessageDecoder())
 						.addLast(new AgentMessageEncoder())
-						.addLast(new AgentToDubboRequestConverter())
+						.addLast(new AgentMessageDecoder())
 						.addLast(new RequestSender(() -> ProviderAgent.this.channel));
 			}
 		});

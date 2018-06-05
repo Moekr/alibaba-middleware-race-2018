@@ -1,6 +1,6 @@
 package com.moekr.dubbo.agent.protocol.codec;
 
-import com.moekr.dubbo.agent.protocol.DubboResponse;
+import com.moekr.dubbo.agent.protocol.AgentResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -10,10 +10,11 @@ import java.util.List;
 
 import static com.moekr.dubbo.agent.protocol.DubboConstants.HEADER_LENGTH;
 import static com.moekr.dubbo.agent.protocol.DubboConstants.MAGIC_NUMBER;
+import static io.netty.util.CharsetUtil.UTF_8;
 
-public class DubboResponseDecoder extends ByteToMessageDecoder {
+public class DubboToAgentResponseDecoder extends ByteToMessageDecoder {
 	@Override
-	protected void decode(ChannelHandlerContext context, ByteBuf in, List<Object> list) {
+	protected void decode(ChannelHandlerContext context, ByteBuf in, List<Object> out) {
 		if (in.readableBytes() < HEADER_LENGTH) return;
 		in.markReaderIndex();
 		short magicNumber = in.readShort();
@@ -35,11 +36,11 @@ public class DubboResponseDecoder extends ByteToMessageDecoder {
 			in.resetReaderIndex();
 			return;
 		}
-		byte[] payload = new byte[length];
-		in.readBytes(payload);
-		payload = Arrays.copyOfRange(payload, 2, length - 1);
-		DubboResponse response = new DubboResponse(id);
-		response.setResult(payload);
-		list.add(response);
+		byte[] body = new byte[length];
+		in.readBytes(body);
+		body = Arrays.copyOfRange(body, 2, length - 1);
+		AgentResponse response = new AgentResponse(id);
+		response.setResult(new String(body, UTF_8));
+		out.add(response);
 	}
 }
