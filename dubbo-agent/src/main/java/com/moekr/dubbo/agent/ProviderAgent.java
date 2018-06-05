@@ -36,7 +36,7 @@ public class ProviderAgent {
 		int dubboPort = Integer.valueOf(System.getProperty(DUBBO_PORT_PROPERTY));
 		int serverPort = Integer.valueOf(System.getProperty(SERVER_PORT_PROPERTY));
 		int weight = Integer.valueOf(System.getProperty(PROVIDER_WEIGHT_PROPERTY));
-		channel = new NettyClientBootstrap(LOCAL_HOST, dubboPort, new ChannelInitializer<SocketChannel>() {
+		channel = new NettyClientBootstrap(LOCAL_HOST, dubboPort, false, new ChannelInitializer<SocketChannel>() {
 			@Override
 			protected void initChannel(SocketChannel channel) {
 				channel.pipeline()
@@ -45,7 +45,7 @@ public class ProviderAgent {
 						.addLast(new ProviderResponseSender());
 			}
 		}).getSocketChannel();
-		new NettyServerBootstrap(serverPort, new ChannelInitializer<SocketChannel>() {
+		new NettyServerBootstrap(serverPort, false, new ChannelInitializer<SocketChannel>() {
 			@Override
 			protected void initChannel(SocketChannel channel) {
 				channel.pipeline()
