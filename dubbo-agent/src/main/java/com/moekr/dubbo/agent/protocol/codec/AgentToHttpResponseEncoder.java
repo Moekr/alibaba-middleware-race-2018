@@ -45,9 +45,6 @@ public class AgentToHttpResponseEncoder extends ChannelOutboundHandlerAdapter {
 		dynamicPart.writeBytes(dynamicBytes);
 		dynamicPart.writeBytes(body);
 		ByteBuf byteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, staticPart.retain(), dynamicPart);
-		byte[] buffer = new byte[byteBuf.readableBytes()];
-		byteBuf.getBytes(0, buffer);
-		System.out.println(new String(buffer, UTF_8));
 		context.write(byteBuf, promise);
 	}
 
