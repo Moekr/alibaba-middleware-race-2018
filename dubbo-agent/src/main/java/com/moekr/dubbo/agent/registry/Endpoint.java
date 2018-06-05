@@ -22,7 +22,7 @@ public class Endpoint {
 		this.port = port;
 		this.weight = weight;
 
-		this.channel = new NettyClientBootstrap(host, port, false, new ChannelInitializer<SocketChannel>() {
+		this.channel = new NettyClientBootstrap(host, port, new ChannelInitializer<SocketChannel>() {
 			@Override
 			protected void initChannel(SocketChannel channel) {
 				channel.pipeline()

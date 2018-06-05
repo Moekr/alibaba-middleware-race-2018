@@ -28,7 +28,7 @@ public class ConsumerAgent {
 	@PostConstruct
 	public void initialize() {
 		int serverPort = Integer.valueOf(System.getProperty(SERVER_PORT_PROPERTY));
-		new NettyServerBootstrap(serverPort, true, new ChannelInitializer<SocketChannel>() {
+		new NettyServerBootstrap(serverPort, new ChannelInitializer<SocketChannel>() {
 			@Override
 			protected void initChannel(SocketChannel channel) {
 				channel.pipeline()
