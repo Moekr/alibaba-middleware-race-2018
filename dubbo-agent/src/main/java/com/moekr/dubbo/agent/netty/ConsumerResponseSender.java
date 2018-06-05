@@ -6,8 +6,7 @@ import com.moekr.dubbo.agent.util.RequestContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class AgentResponseSender extends SimpleChannelInboundHandler<AgentResponse> {
-
+public class ConsumerResponseSender extends SimpleChannelInboundHandler<AgentResponse> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext context, AgentResponse response) {
 		RequestContext requestContext = ContextHolder.remove(response.getId());

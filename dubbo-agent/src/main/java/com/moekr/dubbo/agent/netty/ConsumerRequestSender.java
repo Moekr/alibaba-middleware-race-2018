@@ -8,10 +8,10 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class AgentRequestSender extends SimpleChannelInboundHandler<AgentRequest> {
+public class ConsumerRequestSender extends SimpleChannelInboundHandler<AgentRequest> {
 	private final Registry registry;
 
-	public AgentRequestSender(Registry registry) {
+	public ConsumerRequestSender(Registry registry) {
 		this.registry = registry;
 	}
 

@@ -2,8 +2,8 @@ package com.moekr.dubbo.agent;
 
 import com.moekr.dubbo.agent.netty.NettyClientBootstrap;
 import com.moekr.dubbo.agent.netty.NettyServerBootstrap;
-import com.moekr.dubbo.agent.netty.RequestSender;
-import com.moekr.dubbo.agent.netty.ResponseSender;
+import com.moekr.dubbo.agent.netty.ProviderRequestSender;
+import com.moekr.dubbo.agent.netty.ProviderResponseSender;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageDecoder;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageEncoder;
 import com.moekr.dubbo.agent.protocol.codec.AgentToDubboRequestEncoder;
@@ -42,7 +42,7 @@ public class ProviderAgent {
 				channel.pipeline()
 						.addLast(new AgentToDubboRequestEncoder())
 						.addLast(new DubboToAgentResponseDecoder())
-						.addLast(new ResponseSender());
+						.addLast(new ProviderResponseSender());
 			}
 		}).getSocketChannel();
 		new NettyServerBootstrap(serverPort, new ChannelInitializer<SocketChannel>() {
@@ -51,7 +51,7 @@ public class ProviderAgent {
 				channel.pipeline()
 						.addLast(new AgentMessageEncoder())
 						.addLast(new AgentMessageDecoder())
-						.addLast(new RequestSender(() -> ProviderAgent.this.channel));
+						.addLast(new ProviderRequestSender(() -> ProviderAgent.this.channel));
 			}
 		});
 		registry.register(SERVICE_NAME, serverPort, weight);

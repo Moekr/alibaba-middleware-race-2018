@@ -9,7 +9,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
-public class AgentResponse extends AbstractResponse implements AgentMessage {
+public class AgentResponse extends AgentMessage {
 	private String result;
 
 	public AgentResponse(long id) {
