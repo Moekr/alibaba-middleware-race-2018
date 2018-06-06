@@ -11,7 +11,7 @@ public class ProviderResponseSender extends SimpleChannelInboundHandler<AgentRes
 	protected void channelRead0(ChannelHandlerContext context, AgentResponse response) {
 		RequestContext requestContext = ContextHolder.remove(response.getId());
 		if (requestContext != null) {
-			requestContext.getContext().writeAndFlush(response);
+			requestContext.getChannel().writeAndFlush(response);
 		}
 	}
 }

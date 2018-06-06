@@ -22,7 +22,7 @@ public class ProviderRequestSender extends SimpleChannelInboundHandler<AgentRequ
 	protected void channelRead0(ChannelHandlerContext context, AgentRequest request) {
 		SocketChannel channel = channelSupplier.get();
 		if (channel != null) {
-			RequestContext requestContext = new RequestContext(request.getId(), context);
+			RequestContext requestContext = new RequestContext(request.getId(), context.channel());
 			ContextHolder.hold(requestContext);
 			channel.writeAndFlush(request);
 		}

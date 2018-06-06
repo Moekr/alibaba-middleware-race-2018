@@ -12,7 +12,7 @@ public class ConsumerResponseSender extends SimpleChannelInboundHandler<AgentRes
 		RequestContext requestContext = ContextHolder.remove(response.getId());
 		if (requestContext != null) {
 			ContextHolder.decrease(context.channel());
-			requestContext.getContext().writeAndFlush(response);
+			requestContext.getChannel().writeAndFlush(response);
 		}
 	}
 }

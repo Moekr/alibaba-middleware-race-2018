@@ -21,7 +21,7 @@ public class ConsumerRequestSender extends SimpleChannelInboundHandler<AgentRequ
 		while (!ContextHolder.increase(channel)) {
 			channel = registry.find(request.getInterfaceName()).select().getChannel();
 		}
-		RequestContext requestContext = new RequestContext(request.getId(), context);
+		RequestContext requestContext = new RequestContext(request.getId(), context.channel());
 		ContextHolder.hold(requestContext);
 		channel.writeAndFlush(request);
 	}
