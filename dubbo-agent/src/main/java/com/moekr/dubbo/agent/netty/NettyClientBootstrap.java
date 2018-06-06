@@ -31,7 +31,7 @@ public class NettyClientBootstrap {
 	private void start(ChannelHandler handler) {
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.channel(EpollSocketChannel.class);
-		bootstrap.group(new EpollEventLoopGroup(0, Executors.newCachedThreadPool()));
+		bootstrap.group(new EpollEventLoopGroup(4, Executors.newFixedThreadPool(4)));
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.remoteAddress(this.host, this.port);

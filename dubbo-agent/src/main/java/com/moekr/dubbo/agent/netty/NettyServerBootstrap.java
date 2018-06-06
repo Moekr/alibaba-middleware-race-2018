@@ -26,8 +26,8 @@ public class NettyServerBootstrap {
 		ServerBootstrap bootstrap = new ServerBootstrap();
 		bootstrap.channel(EpollServerSocketChannel.class);
 		bootstrap.group(
-				new EpollEventLoopGroup(0, Executors.newCachedThreadPool()),
-				new EpollEventLoopGroup(0, Executors.newCachedThreadPool())
+				new EpollEventLoopGroup(1, Executors.newFixedThreadPool(1)),
+				new EpollEventLoopGroup(4, Executors.newFixedThreadPool(4))
 		);
 		bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
 		bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
