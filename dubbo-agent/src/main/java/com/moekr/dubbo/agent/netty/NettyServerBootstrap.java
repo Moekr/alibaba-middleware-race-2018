@@ -11,6 +11,9 @@ import lombok.Getter;
 
 import java.util.concurrent.Executors;
 
+import static com.moekr.dubbo.agent.util.Constants.BOSS_THREAD;
+import static com.moekr.dubbo.agent.util.Constants.WORKER_THREAD;
+
 public class NettyServerBootstrap {
 	private final int port;
 
@@ -26,8 +29,8 @@ public class NettyServerBootstrap {
 		ServerBootstrap bootstrap = new ServerBootstrap();
 		bootstrap.channel(EpollServerSocketChannel.class);
 		bootstrap.group(
-				new EpollEventLoopGroup(1, Executors.newFixedThreadPool(1)),
-				new EpollEventLoopGroup(4, Executors.newFixedThreadPool(4))
+				new EpollEventLoopGroup(BOSS_THREAD, Executors.newFixedThreadPool(BOSS_THREAD)),
+				new EpollEventLoopGroup(WORKER_THREAD, Executors.newFixedThreadPool(WORKER_THREAD))
 		);
 		bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
 		bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);

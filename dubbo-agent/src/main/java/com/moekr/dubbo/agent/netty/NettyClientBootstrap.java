@@ -12,8 +12,7 @@ import lombok.Getter;
 
 import java.util.concurrent.Executors;
 
-import static com.moekr.dubbo.agent.util.Constants.RETRY_DELAY;
-import static com.moekr.dubbo.agent.util.Constants.RETRY_TIME;
+import static com.moekr.dubbo.agent.util.Constants.*;
 
 public class NettyClientBootstrap {
 	private final int port;
@@ -31,7 +30,7 @@ public class NettyClientBootstrap {
 	private void start(ChannelHandler handler) {
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.channel(EpollSocketChannel.class);
-		bootstrap.group(new EpollEventLoopGroup(4, Executors.newFixedThreadPool(4)));
+		bootstrap.group(new EpollEventLoopGroup(WORKER_THREAD, Executors.newFixedThreadPool(WORKER_THREAD)));
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.remoteAddress(this.host, this.port);

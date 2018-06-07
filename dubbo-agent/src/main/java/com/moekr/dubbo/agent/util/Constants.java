@@ -16,8 +16,9 @@ public abstract class Constants {
 
 	public static final String ETCD_ROOT_PATH = "DUBBO_AGENT";
 
-	public static final String HTTP_ID_HEADER = "X-REQ-ID";
-
 	public static final int RETRY_TIME = 10;
 	public static final long RETRY_DELAY = 2000;
+
+	public static final int BOSS_THREAD = 1;
+	public static final int WORKER_THREAD = 4;
 }
