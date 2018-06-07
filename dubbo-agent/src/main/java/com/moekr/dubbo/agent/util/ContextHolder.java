@@ -1,5 +1,6 @@
 package com.moekr.dubbo.agent.util;
 
+import com.moekr.dubbo.agent.registry.Endpoint;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
@@ -19,10 +20,10 @@ public abstract class ContextHolder {
 	}
 
 	private static final int COUNTER_THRESHOLD = 200;
-	private static final Map<Channel, AtomicInteger> COUNTER_MAP = new ConcurrentHashMap<>();
+	private static final Map<Endpoint, AtomicInteger> ENDPOINT_MAP = new ConcurrentHashMap<>();
 
-	public static boolean increase(Channel channel) {
-		AtomicInteger value = COUNTER_MAP.computeIfAbsent(channel, ch -> new AtomicInteger());
+	public static boolean increase(Endpoint endpoint) {
+		AtomicInteger value = ENDPOINT_MAP.computeIfAbsent(endpoint, ch -> new AtomicInteger());
 		if (value.incrementAndGet() < COUNTER_THRESHOLD) {
 			return true;
 		} else {
@@ -32,6 +33,12 @@ public abstract class ContextHolder {
 	}
 
 	public static void decrease(Channel channel) {
-		COUNTER_MAP.get(channel).decrementAndGet();
+		ENDPOINT_MAP.get(CHANNEL_MAP.get(channel)).decrementAndGet();
+	}
+
+	private static final Map<Channel, Endpoint> CHANNEL_MAP = new HashMap<>();
+
+	public static void register(Endpoint endpoint, Channel channel) {
+		CHANNEL_MAP.put(channel, endpoint);
 	}
 }
