@@ -7,13 +7,11 @@ import com.moekr.dubbo.agent.protocol.AgentResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import lombok.extern.apachecommons.CommonsLog;
 
 import java.util.List;
 
 import static com.moekr.dubbo.agent.protocol.AgentConstants.*;
 
-@CommonsLog
 public class AgentMessageDecoder extends ByteToMessageDecoder {
 
 	private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -47,7 +45,6 @@ public class AgentMessageDecoder extends ByteToMessageDecoder {
 		}
 		if (message != null) {
 			out.add(message);
-			log.info(message.getId() + " " + System.nanoTime());
 		} else {
 			context.close();
 		}
