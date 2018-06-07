@@ -6,11 +6,13 @@ import com.moekr.dubbo.agent.protocol.AgentRequest;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import lombok.extern.apachecommons.CommonsLog;
 
 import java.io.IOException;
 
 import static com.moekr.dubbo.agent.protocol.AgentConstants.*;
 
+@CommonsLog
 public class AgentMessageEncoder extends MessageToByteEncoder<AgentMessage> {
 	private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -21,5 +23,6 @@ public class AgentMessageEncoder extends MessageToByteEncoder<AgentMessage> {
 		out.writeByte(message instanceof AgentRequest ? REQUEST_TYPE : RESPONSE_TYPE);
 		out.writeInt(payload.length);
 		out.writeBytes(payload);
+		log.info(message.getId() + " " + System.nanoTime());
 	}
 }
