@@ -3,6 +3,7 @@ package com.moekr.dubbo.agent;
 import com.moekr.dubbo.agent.netty.NettyBootstrap;
 import com.moekr.dubbo.agent.netty.ProviderRequestSender;
 import com.moekr.dubbo.agent.netty.ProviderResponseSender;
+import com.moekr.dubbo.agent.protocol.AgentRequest;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageDecoder;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageEncoder;
 import com.moekr.dubbo.agent.protocol.codec.AgentToDubboRequestEncoder;
@@ -66,7 +67,7 @@ public class ProviderAgent {
 					protected void initChannel(SocketChannel channel) {
 						channel.pipeline()
 								.addLast(new AgentMessageEncoder())
-								.addLast(new AgentMessageDecoder())
+								.addLast(new AgentMessageDecoder(AgentRequest.class))
 								.addLast(new ProviderRequestSender(() -> ProviderAgent.this.channel));
 					}
 				}

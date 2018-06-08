@@ -2,17 +2,17 @@ package com.moekr.dubbo.agent.netty;
 
 import com.moekr.dubbo.agent.protocol.AgentResponse;
 import com.moekr.dubbo.agent.util.ContextHolder;
-import com.moekr.dubbo.agent.util.RequestContext;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 public class ConsumerResponseSender extends SimpleChannelInboundHandler<AgentResponse> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext context, AgentResponse response) {
-		RequestContext requestContext = ContextHolder.remove(response.getId());
-		if (requestContext != null) {
+		Channel channel = ContextHolder.remove(response.getId());
+		if (channel != null) {
 			ContextHolder.decrease(context.channel());
-			requestContext.getChannel().writeAndFlush(response);
+			channel.writeAndFlush(response);
 		}
 	}
 }

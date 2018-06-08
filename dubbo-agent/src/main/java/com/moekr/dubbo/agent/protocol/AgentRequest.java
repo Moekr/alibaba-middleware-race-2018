@@ -18,6 +18,7 @@ public class AgentRequest extends AgentMessage {
 	private String methodName;
 	private String parameterTypesString;
 	private String parameter;
+	private String fullRequest;
 
 	public AgentRequest(long id) {
 		super(id);

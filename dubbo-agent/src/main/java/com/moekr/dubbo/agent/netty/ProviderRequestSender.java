@@ -2,7 +2,6 @@ package com.moekr.dubbo.agent.netty;
 
 import com.moekr.dubbo.agent.protocol.AgentRequest;
 import com.moekr.dubbo.agent.util.ContextHolder;
-import com.moekr.dubbo.agent.util.RequestContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -22,8 +21,7 @@ public class ProviderRequestSender extends SimpleChannelInboundHandler<AgentRequ
 	protected void channelRead0(ChannelHandlerContext context, AgentRequest request) {
 		Channel channel = channelSupplier.get();
 		if (channel != null) {
-			RequestContext requestContext = new RequestContext(request.getId(), context.channel());
-			ContextHolder.hold(requestContext);
+			ContextHolder.hold(request.getId(), context.channel());
 			channel.writeAndFlush(request);
 		}
 	}

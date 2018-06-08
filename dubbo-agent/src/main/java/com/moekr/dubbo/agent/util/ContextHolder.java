@@ -9,13 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class ContextHolder {
-	private static final Map<Long, RequestContext> CONTEXT_MAP = new HashMap<>();
+	private static final Map<Long, Channel> CONTEXT_MAP = new HashMap<>();
 
-	public static void hold(RequestContext context) {
-		CONTEXT_MAP.put(context.getId(), context);
+	public static void hold(long id, Channel channel) {
+		CONTEXT_MAP.put(id, channel);
 	}
 
-	public static RequestContext remove(long id) {
+	public static Channel remove(long id) {
 		return CONTEXT_MAP.remove(id);
 	}
 

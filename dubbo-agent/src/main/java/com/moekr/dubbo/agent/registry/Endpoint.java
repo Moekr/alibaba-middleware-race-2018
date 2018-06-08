@@ -2,6 +2,7 @@ package com.moekr.dubbo.agent.registry;
 
 import com.moekr.dubbo.agent.netty.ConsumerResponseSender;
 import com.moekr.dubbo.agent.netty.NettyBootstrap;
+import com.moekr.dubbo.agent.protocol.AgentResponse;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageDecoder;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageEncoder;
 import com.moekr.dubbo.agent.util.ContextHolder;
@@ -55,7 +56,7 @@ public class Endpoint {
 						protected void initChannel(SocketChannel channel) {
 							channel.pipeline()
 									.addLast(new AgentMessageEncoder())
-									.addLast(new AgentMessageDecoder())
+									.addLast(new AgentMessageDecoder(AgentResponse.class))
 									.addLast(new ConsumerResponseSender());
 						}
 					}
