@@ -21,12 +21,12 @@ public class HttpToAgentRequestDecoder extends ByteToMessageDecoder {
 
 	@Override
 	protected void decode(ChannelHandlerContext context, ByteBuf in, List<Object> out) throws Exception {
-		if (!decoderRequestLine(in)) return;
-		if (!decoderHeader(in)) return;
+		if (!decodeRequestLine(in)) return;
+		if (!decodeHeader(in)) return;
 		if (length == null) {
 			context.close();
 		} else {
-			AgentRequest request = decoderBody(in);
+			AgentRequest request = decodeBody(in);
 			if (request != null) {
 				out.add(request);
 				reset();
@@ -34,14 +34,14 @@ public class HttpToAgentRequestDecoder extends ByteToMessageDecoder {
 		}
 	}
 
-	private boolean decoderRequestLine(ByteBuf in) {
+	private boolean decodeRequestLine(ByteBuf in) {
 		if (requestLine) return true;
 		int index = in.forEachByte(FIND_CR);
 		if (index == -1) return false;
 		return (requestLine = trySetReaderIndex(in, index + 2));
 	}
 
-	private boolean decoderHeader(ByteBuf in) {
+	private boolean decodeHeader(ByteBuf in) {
 		if (header) return true;
 		while (true) {
 			int beginIndex = in.readerIndex();
@@ -65,7 +65,7 @@ public class HttpToAgentRequestDecoder extends ByteToMessageDecoder {
 		}
 	}
 
-	private AgentRequest decoderBody(ByteBuf in) throws Exception {
+	private AgentRequest decodeBody(ByteBuf in) throws Exception {
 		if (in.readableBytes() < length) return null;
 		byte[] buffer = new byte[length];
 		in.readBytes(buffer);

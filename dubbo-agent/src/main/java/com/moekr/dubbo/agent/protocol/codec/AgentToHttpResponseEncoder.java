@@ -38,13 +38,13 @@ public class AgentToHttpResponseEncoder extends ChannelOutboundHandlerAdapter {
 			return;
 		}
 		AgentResponse response = (AgentResponse) object;
-		byte[] body = response.getResult().getBytes(UTF_8);
-		String dynamicString = CONTENT_LENGTH + COLON + body.length + CRLF + CRLF;
-		byte[] dynamicBytes = dynamicString.getBytes(UTF_8);
-		ByteBuf dynamicPart = PooledByteBufAllocator.DEFAULT.ioBuffer(dynamicBytes.length);
-		dynamicPart.writeBytes(dynamicBytes);
-		dynamicPart.writeBytes(body);
-		ByteBuf byteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, staticPart.retain(), dynamicPart);
+		String bodyString = response.getResult();
+		ByteBuf bodyPart = PooledByteBufAllocator.DEFAULT.ioBuffer(bodyString.length());
+		bodyPart.writeCharSequence(bodyString, UTF_8);
+		String dynamicString = CONTENT_LENGTH + COLON + bodyPart.readableBytes() + CRLF + CRLF;
+		ByteBuf dynamicPart = PooledByteBufAllocator.DEFAULT.ioBuffer(dynamicString.length());
+		dynamicPart.writeCharSequence(dynamicString, UTF_8);
+		ByteBuf byteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 3, staticPart.retain(), dynamicPart, bodyPart);
 		context.write(byteBuf, promise);
 	}
 

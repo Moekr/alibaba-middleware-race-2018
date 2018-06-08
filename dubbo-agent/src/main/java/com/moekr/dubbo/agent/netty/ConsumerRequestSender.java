@@ -2,6 +2,7 @@ package com.moekr.dubbo.agent.netty;
 
 import com.moekr.dubbo.agent.protocol.AgentRequest;
 import com.moekr.dubbo.agent.registry.Endpoint;
+import com.moekr.dubbo.agent.registry.EndpointSet;
 import com.moekr.dubbo.agent.registry.Registry;
 import com.moekr.dubbo.agent.util.ContextHolder;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,9 +17,10 @@ public class ConsumerRequestSender extends SimpleChannelInboundHandler<AgentRequ
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext context, AgentRequest request) throws Exception {
-		Endpoint endpoint = registry.find(request.getInterfaceName()).select();
+		EndpointSet endpointSet = registry.find(request.getInterfaceName());
+		Endpoint endpoint = endpointSet.select();
 		while (!ContextHolder.increase(endpoint)) {
-			endpoint = registry.find(request.getInterfaceName()).select();
+			endpoint = endpointSet.select();
 		}
 		ContextHolder.hold(request.getId(), context.channel());
 		endpoint.channel().writeAndFlush(request);
