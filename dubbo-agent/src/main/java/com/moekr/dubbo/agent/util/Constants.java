@@ -20,5 +20,5 @@ public abstract class Constants {
 	public static final long RETRY_DELAY = 2000;
 
 	public static final int BOSS_THREAD = 1;
-	public static final int WORKER_THREAD = 2;
+	public static final int WORKER_THREAD = 1;
 }

@@ -8,6 +8,7 @@ import com.moekr.dubbo.agent.protocol.codec.AgentMessageEncoder;
 import com.moekr.dubbo.agent.util.ContextHolder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.SocketChannel;
@@ -15,12 +16,14 @@ import lombok.*;
 
 import java.io.IOException;
 
-import static com.moekr.dubbo.agent.util.Constants.BOSS_THREAD;
+import static com.moekr.dubbo.agent.util.Constants.WORKER_THREAD;
 
 @Data
 @EqualsAndHashCode(exclude = "channelThreadLocal")
 @ToString(exclude = "channelThreadLocal")
 public class Endpoint {
+	private static final EventLoopGroup EVENT_LOOP_GROUP = new EpollEventLoopGroup(WORKER_THREAD);
+
 	@Getter(AccessLevel.PRIVATE)
 	private final ThreadLocal<Channel> channelThreadLocal = new ThreadLocal<>();
 
@@ -50,7 +53,7 @@ public class Endpoint {
 					host,
 					port,
 					EpollSocketChannel.class,
-					new EpollEventLoopGroup(BOSS_THREAD),
+					EVENT_LOOP_GROUP,
 					new ChannelInitializer<SocketChannel>() {
 						@Override
 						protected void initChannel(SocketChannel channel) {
