@@ -19,9 +19,6 @@ public class ConsumerRequestSender extends SimpleChannelInboundHandler<AgentRequ
 	protected void channelRead0(ChannelHandlerContext context, AgentRequest request) throws Exception {
 		EndpointSet endpointSet = registry.find(request.getInterfaceName());
 		Endpoint endpoint = endpointSet.select();
-		while (!ContextHolder.increase(endpoint)) {
-			endpoint = endpointSet.select();
-		}
 		ContextHolder.hold(request.getId(), context.channel());
 		endpoint.channel().writeAndFlush(request);
 	}

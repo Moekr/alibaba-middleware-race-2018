@@ -5,7 +5,6 @@ import com.moekr.dubbo.agent.netty.NettyBootstrap;
 import com.moekr.dubbo.agent.protocol.AgentResponse;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageDecoder;
 import com.moekr.dubbo.agent.protocol.codec.AgentMessageEncoder;
-import com.moekr.dubbo.agent.util.ContextHolder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -65,7 +64,6 @@ public class Endpoint {
 					}
 			);
 			channelThreadLocal.set(channel);
-			ContextHolder.register(this, channel);
 		}
 		return channel;
 	}

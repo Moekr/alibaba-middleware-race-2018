@@ -11,7 +11,6 @@ public class ConsumerResponseSender extends SimpleChannelInboundHandler<AgentRes
 	protected void channelRead0(ChannelHandlerContext context, AgentResponse response) {
 		Channel channel = ContextHolder.remove(response.getId());
 		if (channel != null) {
-			ContextHolder.decrease(context.channel());
 			channel.writeAndFlush(response);
 		}
 	}

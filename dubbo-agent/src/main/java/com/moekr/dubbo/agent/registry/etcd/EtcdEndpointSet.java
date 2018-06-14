@@ -12,11 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class EtcdEndpointSet implements EndpointSet {
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Random random = new Random();
 
 	private final Map<String, Endpoint> endpointMap = new LinkedHashMap<>();
@@ -34,15 +31,6 @@ class EtcdEndpointSet implements EndpointSet {
 
 	@Override
 	public Endpoint select() {
-		lock.readLock().tryLock();
-		try {
-			return select0();
-		} finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	private Endpoint select0() {
 		if (totalWeight == 0) {
 			throw new IllegalStateException("EndpointSet doesn't contain any endpoints");
 		}
@@ -59,35 +47,7 @@ class EtcdEndpointSet implements EndpointSet {
 		return null;
 	}
 
-	private void watch() {
-		while (!Thread.currentThread().isInterrupted()) {
-			try {
-				WatchResponse response = watcher.listen();
-				for (WatchEvent event : response.getEvents()) {
-					WatchEvent.EventType eventType = event.getEventType();
-					if (eventType == WatchEvent.EventType.PUT) {
-						put(event.getKeyValue());
-					} else if (eventType == WatchEvent.EventType.DELETE) {
-						remove(event.getPrevKV());
-					}
-				}
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
-		watcher.close();
-	}
-
 	private void put(KeyValue keyValue) {
-		lock.writeLock().tryLock();
-		try {
-			put0(keyValue);
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	private void put0(KeyValue keyValue) {
 		String key = keyValue.getKey().toStringUtf8();
 		String value = keyValue.getValue().toStringUtf8();
 		Endpoint endpoint = endpointMap.get(key);
@@ -108,19 +68,29 @@ class EtcdEndpointSet implements EndpointSet {
 	}
 
 	private void remove(KeyValue keyValue) {
-		lock.writeLock().tryLock();
-		try {
-			remove0(keyValue);
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	private void remove0(KeyValue keyValue) {
 		String key = keyValue.getKey().toStringUtf8();
 		Endpoint endpoint = endpointMap.remove(key);
 		if (endpoint != null) {
 			totalWeight = totalWeight - endpoint.getWeight();
 		}
+	}
+
+	private void watch() {
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				WatchResponse response = watcher.listen();
+				for (WatchEvent event : response.getEvents()) {
+					WatchEvent.EventType eventType = event.getEventType();
+					if (eventType == WatchEvent.EventType.PUT) {
+						put(event.getKeyValue());
+					} else if (eventType == WatchEvent.EventType.DELETE) {
+						remove(event.getPrevKV());
+					}
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		watcher.close();
 	}
 }
