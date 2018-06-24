@@ -6,8 +6,8 @@
 
     <groupId>com.moekr</groupId>
     <artifactId>alibaba-middleware-race-2018</artifactId>
-    <packaging>pom</packaging>
     <version>0.1.0</version>
+    <packaging>pom</packaging>
     <modules>
         <module>dubbo-agent</module>
     </modules>
