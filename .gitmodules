@@ -1,0 +1,3 @@
+[submodule "message-queue"]
+	path = message-queue
+	url = git://github.com/Moekr/message-queue.git
